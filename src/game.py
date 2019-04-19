@@ -1,5 +1,6 @@
 import random
 from enum import IntEnum
+import csv
 
 class Rank(IntEnum):
 	Ace = 1
@@ -45,6 +46,9 @@ class BlackJack:
 		self.dealer_hand = []
 		self.player_hand = []
 		self.deck = Deck()
+		self.result = 0
+		self.hasAce = False
+		self.decision = []
 
 	def get_hand_value(self, hand):
 		result = []
@@ -62,6 +66,7 @@ class BlackJack:
 		hand = self.get_hand_value(hand)
 		ace = 0
 		sum = 0
+		self.hasAce = False
 		for i in hand:
 			sum += i
 			if i == 11:
@@ -70,6 +75,7 @@ class BlackJack:
 			if sum > 21:
 				sum -= 10
 			else:
+				self.hasAce = True
 				break
 		return sum
 
@@ -86,7 +92,7 @@ class BlackJack:
 			dealer_sum = self.get_sum(self.dealer_hand)
 			print("Dealers cards are:")
 			self.print_hand(self.dealer_hand)
-			if dealer_sum <= 21 and dealer_sum > player_sum:
+			if 21 >= dealer_sum > player_sum:
 				print("THE DEALER WINS ")
 				self.result = -1
 			elif dealer_sum == player_sum:
@@ -95,10 +101,13 @@ class BlackJack:
 			else:
 				print("YOU WIN!!!!!")
 				self.result = 1
+		self.record_reward()
+		self.write_to_csv()
 
 	def play(self):
 		while True:
 			action = self.get_input()
+			self.record_action(action)
 			if action == "0":
 				print("You have decided to Stand at a total of " + str(self.get_sum(self.player_hand)))
 				return
@@ -107,7 +116,7 @@ class BlackJack:
 				self.player_hand.append(new_card)
 				print("You picked " + self.deck.card_to_string(new_card))
 				sum = self.get_sum(self.player_hand)
-				if sum >= 21:
+				if sum > 21:
 					print("YOU GOT BUSTED!!!!!")
 					self.result = -1
 					return
@@ -116,13 +125,30 @@ class BlackJack:
 		print("Dealers first card is: " + self.deck.card_to_string(self.dealer_hand[0]))
 		print("Your current cards are:")
 		self.print_hand(self.player_hand)
-		str = "Please choose action, 1 for HIT or 0 for STAND: "
-		action = input(str)
+		s = "Please choose action, 1 for HIT or 0 for STAND: "
+		action = input(s)
 		return action
 
 	def print_hand(self, hand):
 		for i in hand:
 			print("\t" + self.deck.card_to_string(i))
+
+	def record_action(self, action):
+		individual_decision= [str(self.get_sum(self.player_hand)), self.dealer_hand[0][1].value, str(self.hasAce), str(action)]
+		self.decision.append(individual_decision)
+
+	def record_reward(self):
+		count = 0
+		for d in reversed(self.decision):
+			d.append(count)
+			d.append(self.result)
+			count += 1
+
+	def write_to_csv(self):
+		with open('../userData.csv', 'a') as f:
+			writer = csv.writer(f)
+			writer.writerows(self.decision)
+		f.close()
 
 
 if __name__ == "__main__":
