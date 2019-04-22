@@ -1,4 +1,10 @@
-16,5,False,0,0,0
-18,4,True,1,2,-1
-12,4,False,1,1,-1
-13,4,False,1,0,-1
+20,11,False,STAND,0,0
+19,2,True,HIT,1,0
+19,2,False,STAND,0,0
+18,11,False,STAND,0,-1
+13,2,False,HIT,1,1
+21,2,False,STAND,0,1
+20,4,False,STAND,0,1
+21,12,False,STAND,0,1
+19,3,False,STAND,0,0
+20,11,False,STAND,0,-1

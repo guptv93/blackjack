@@ -97,6 +97,7 @@ class BlackJack:
 		self.dealer_hand.append(self.deck.pick_card())
 		while self.get_sum(self.player_hand) < 12:
 			self.player_hand.append(self.deck.pick_card())
+		self.feed.append("Start Playing!")
 
 	def hit(self):
 		self.record_action("HIT")
@@ -130,18 +131,24 @@ class BlackJack:
 				self.record_reward()
 				return Status.PLAYER_WON
 
-	def get_feed(self, stat):
+	def get_status_string(self, stat):
+		status_string = ""
 		if stat == 1:
-			self.feed.append("Your total is " + str(self.get_sum(self.player_hand)) + ". Continue playing.")
+			status_string = "Your total is " + str(self.get_sum(self.player_hand)) + ". Continue playing."
 		elif stat == 2:
-			self.feed.append("Your total exceeds 21. You got Busted!!")
+			status_string = "Your total exceeds 21. You got Busted!!"
 		elif stat == 3:
-			self.feed.append("You Win!!")
+			status_string = "You Win!!"
 		elif stat == 4:
-			self.feed.append("The Dealer Wins!!")
+			status_string = "The Dealer Wins!!"
 		elif stat == 5:
-			self.feed.append("The Dealer's sum is exactly equal to yours. Game Draw!!")
-		return feed
+			status_string = "The Dealer's sum is exactly equal to yours. Game Draw!!"
+		return status_string
+
+	def get_feed(self, stat):
+		new_feed = self.get_status_string(stat)
+		self.feed.append(new_feed)
+		return self.feed
 
 	def print_hand(self, hand):
 		for i in hand:
@@ -152,6 +159,7 @@ class BlackJack:
 		self.decision.append(individual_decision)
 
 	def record_reward(self):
+		print("Entered Record")
 		count = 0
 		for d in reversed(self.decision):
 			d.append(count)
@@ -160,11 +168,8 @@ class BlackJack:
 		self.write_to_csv()
 
 	def write_to_csv(self):
-		with open('../userData.csv', 'a') as f:
+		print("Entered write")
+		with open('userData.csv', 'a') as f:
 			writer = csv.writer(f)
 			writer.writerows(self.decision)
 		f.close()
-
-
-if __name__ == "__main__":
-	BlackJack().start_game()
