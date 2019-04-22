@@ -17,6 +17,12 @@ class Rank(IntEnum):
 	Queen = 12
 	King = 13
 
+class Status(IntEnum):
+	STILL_PLAYING = 1
+	PLAYER_BUST = 2
+	PLAYER_WON = 3
+	PLAYER_LOST = 4
+	GAME_DRAW = 5
 
 class Deck:
 
@@ -46,21 +52,28 @@ class BlackJack:
 		self.dealer_hand = []
 		self.player_hand = []
 		self.deck = Deck()
-		self.result = 0
+		self.result = 2
 		self.hasAce = False
 		self.decision = []
+		self.feed = []
+
+	def get_player_hand(self):
+		return self.player_hand
+
+	def get_dealer_hand(self):
+		return self.dealer_hand
 
 	def get_hand_value(self, hand):
-		result = []
+		ret_value = []
 		for card in hand:
 			suit,rank = card
 			if rank == 11 or rank == 12 or rank == 13:
-				result.append(10)
+				ret_value.append(10)
 			elif rank == 1:
-				result.append(11)
+				ret_value.append(11)
 			else:
-				result.append(rank.value)
-		return result
+				ret_value.append(rank.value)
+		return ret_value
 
 	def get_sum(self, hand):
 		hand = self.get_hand_value(hand)
@@ -84,50 +97,51 @@ class BlackJack:
 		self.dealer_hand.append(self.deck.pick_card())
 		while self.get_sum(self.player_hand) < 12:
 			self.player_hand.append(self.deck.pick_card())
-		self.play()
+
+	def hit(self):
+		self.record_action("HIT")
+		new_card = self.deck.pick_card()
+		self.player_hand.append(new_card)
+		sum = self.get_sum(self.player_hand)
+		if sum > 21:
+			self.result = -1
+			self.record_reward()
+			return Status.PLAYER_BUST
+		else:
+			return Status.STILL_PLAYING
+
+	def stand(self):
+		self.record_action("STAND")
 		player_sum = self.get_sum(self.player_hand)
 		if player_sum <= 21:
 			while self.get_sum(self.dealer_hand) < player_sum:
 				self.dealer_hand.append(self.deck.pick_card())
 			dealer_sum = self.get_sum(self.dealer_hand)
-			print("Dealers cards are:")
-			self.print_hand(self.dealer_hand)
 			if 21 >= dealer_sum > player_sum:
-				print("THE DEALER WINS ")
 				self.result = -1
+				self.record_reward()
+				return Status.PLAYER_LOST
 			elif dealer_sum == player_sum:
-				print("GAME DRAW!!!!!")
 				self.result = 0
+				self.record_reward()
+				return Status.GAME_DRAW
 			else:
-				print("YOU WIN!!!!!")
 				self.result = 1
-		self.record_reward()
-		self.write_to_csv()
+				self.record_reward()
+				return Status.PLAYER_WON
 
-	def play(self):
-		while True:
-			action = self.get_input()
-			self.record_action(action)
-			if action == "0":
-				print("You have decided to Stand at a total of " + str(self.get_sum(self.player_hand)))
-				return
-			if action == "1":
-				new_card = self.deck.pick_card()
-				self.player_hand.append(new_card)
-				print("You picked " + self.deck.card_to_string(new_card))
-				sum = self.get_sum(self.player_hand)
-				if sum > 21:
-					print("YOU GOT BUSTED!!!!!")
-					self.result = -1
-					return
-
-	def get_input(self):
-		print("Dealers first card is: " + self.deck.card_to_string(self.dealer_hand[0]))
-		print("Your current cards are:")
-		self.print_hand(self.player_hand)
-		s = "Please choose action, 1 for HIT or 0 for STAND: "
-		action = input(s)
-		return action
+	def get_feed(self, stat):
+		if stat == 1:
+			self.feed.append("Your total is " + str(self.get_sum(self.player_hand)) + ". Continue playing.")
+		elif stat == 2:
+			self.feed.append("Your total exceeds 21. You got Busted!!")
+		elif stat == 3:
+			self.feed.append("You Win!!")
+		elif stat == 4:
+			self.feed.append("The Dealer Wins!!")
+		elif stat == 5:
+			self.feed.append("The Dealer's sum is exactly equal to yours. Game Draw!!")
+		return feed
 
 	def print_hand(self, hand):
 		for i in hand:
@@ -143,6 +157,7 @@ class BlackJack:
 			d.append(count)
 			d.append(self.result)
 			count += 1
+		self.write_to_csv()
 
 	def write_to_csv(self):
 		with open('../userData.csv', 'a') as f:
