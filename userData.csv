@@ -1,0 +1,7 @@
+15,7,False,HIT,0,-1
+17,10,False,STAND,0,-1
+18,7,False,STAND,0,1
+12,2,True,HIT,3,-1
+14,2,True,HIT,2,-1
+17,2,True,HIT,1,-1
+17,2,False,STAND,0,-1
