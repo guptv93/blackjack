@@ -159,7 +159,6 @@ class BlackJack:
 		self.decision.append(individual_decision)
 
 	def record_reward(self):
-		print("Entered Record")
 		count = 0
 		for d in reversed(self.decision):
 			d.append(count)
@@ -168,7 +167,6 @@ class BlackJack:
 		self.write_to_csv()
 
 	def write_to_csv(self):
-		print("Entered write")
 		with open('userData.csv', 'a') as f:
 			writer = csv.writer(f)
 			writer.writerows(self.decision)
