@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+
+
+{% block rules %}
+<h5>How To Play</h5>
+Beat the dealer by getting a higher score than him, without exceeding 21. <br/><br/>
+
+<strong>Hit</strong> to draw a card for yourself. <br/>
+<strong>Stand</strong> to stop drawing cards.<br/>
+<strong>Reset</strong> to start a new game <br/>
+
+<strong>2 - 10</strong>: 2 - 10 <br/>
+<strong>J, Q, K</strong>: 10 <br/>
+<strong>A</strong>: 1 or 11 <br/><br/>
+
+<strong>Good luck!</strong>
+{% endblock %}
+
+
+{% block feed %}
+<h5>Feed</h5>
+<b>{{ feed }}</b>
+{% endblock %}
+
+
+{% block player %}
+<h5>Your Cards:</h5>
+{{ player_hand }}
+{% endblock %}
+
+
+{% block dealer %}
+<h5>Dealer's Cards:</h5>
+{{ dealer_hand }}
+{% endblock %}
+
+
+{% block status %}
+<div id="innerCheckbox">
+    {{ status }}
+</div>
+
+{% endblock %}
+
+
+{% block menu %}
+<br><br>
+
+<form name="playerChoice" id="choice" action="" style="display: inline;">
+    <input id="hit" type="button" value="Hit"/>
+    <input id="stand" type="button" value="Stand"/>
+    <input id="reset" type="button" value="Reset"/>
+</form>
+
+<script>
+    $(document).ready(function() {
+
+    var status = $('#innerCheckbox').text().trim();
+    if(status=="Status.PLAYER_BUST" || status=="Status.PLAYER_WON" || status=="Status.PLAYER_LOST" || status=="Status.GAME_DRAW"){
+        $("#stand").attr('disabled', true);
+        $("#hit").attr('disabled', true);
+    }
+
+    $('#hit').click(function(){
+    $('form[name="playerChoice"]').attr('action','/__hit');
+    $('form[name="playerChoice"]').submit();
+    });
+
+    $('#stand').click(function(){
+     $('form[name="playerChoice"]').attr('action','/__stand');
+     $('form[name="playerChoice"]').submit();
+    });
+
+    $('#reset').click(function(){
+     $('form[name="playerChoice"]').attr('action','/__reset');
+     $('form[name="playerChoice"]').submit();
+    });
+     });
+</script>
+
+{% endblock %}
