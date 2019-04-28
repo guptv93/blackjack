@@ -108,7 +108,7 @@ class BlackJack:
         self.player_hand.append(new_card)
         sum = self.get_sum(self.player_hand)
         if sum > 21:
-            self.result = -1
+            self.result = -10
             self.record_reward()
             return Status.PLAYER_BUST
         else:
@@ -122,7 +122,7 @@ class BlackJack:
                 self.dealer_hand.append(self.deck.pick_card())
             dealer_sum = self.get_sum(self.dealer_hand)
             if 21 >= dealer_sum > player_sum:
-                self.result = -1
+                self.result = -10
                 self.record_reward()
                 return Status.PLAYER_LOST
             elif dealer_sum == player_sum:
@@ -130,7 +130,7 @@ class BlackJack:
                 self.record_reward()
                 return Status.GAME_DRAW
             else:
-                self.result = 1
+                self.result = 10
                 self.record_reward()
                 return Status.PLAYER_WON
 
@@ -169,7 +169,7 @@ class BlackJack:
             d.append(count)
             d.append(self.result)
             count += 1
-        self.write_to_csv()
+        #self.write_to_csv()
 
     def write_to_csv(self):
         with open('userData.csv', 'a') as f:
