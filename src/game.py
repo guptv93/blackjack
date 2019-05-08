@@ -149,10 +149,42 @@ class BlackJack:
             status_string = "The Dealer's sum is exactly equal to yours. Game Draw!!"
         return status_string
 
+    def set_player_dealer_cards(self, player_sum, dealer_card, has_ace):
+        if has_ace == 1:
+            self.player_hand.append(("Hearts", Rank.Ace))
+            self.player_hand.append(("Hearts", Rank(player_sum-11)))
+            self.get_sum(self.player_hand)
+        else:
+            self.player_hand.append(("Hearts", Rank.Ten))
+            if player_sum-10 <= 10:
+                self.player_hand.append(("Hearts", Rank(player_sum-10)))
+            else:
+                self.player_hand.append(("Hearts", Rank.Five))
+                self.player_hand.append(("Hearts", Rank.Six))
+        self.dealer_hand.append(("Hearts", Rank(dealer_card)))
+
     def get_feed(self, stat):
         new_feed = self.get_status_string(stat)
         self.feed.append(new_feed)
         return self.feed
+
+    def set_state(self, player_sum, dealer_sum, has_ace):
+        if has_ace:
+            self.player_hand.append(("Hearts", Rank.Ace))
+            self.player_hand.append(("Hearts", Rank(player_sum-11)))
+            self.get_sum(self.player_hand)
+        else:
+            self.player_hand.append(("Hearts", Rank.Ten))
+            if player_sum-10 <= 10:
+                self.player_hand.append(("Hearts", Rank(player_sum-10)))
+            else:
+                self.player_hand.append(("Hearts", Rank.Five))
+                self.player_hand.append(("Hearts", Rank.Six))
+        if dealer_sum == 11: 
+            self.dealer_hand.append(("Hearts", Rank(1)))
+        else:
+            self.dealer_hand.append(("Hearts", Rank(dealer_sum)))
+        
 
     def print_hand(self, hand):
         for i in hand:
